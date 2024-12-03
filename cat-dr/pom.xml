@@ -13,6 +13,7 @@
         <module>cat-gateway</module>
         <module>cat-customer</module>
         <module>customer-bus</module>
+
     </modules>
 
     <properties>
