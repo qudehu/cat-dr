@@ -1,0 +1,78 @@
+server:
+  port: 8003
+spring:
+  profiles:
+    include: common
+  application:
+    name: cat-customer
+  devtools:
+    restart:
+      enabled: true  #设置开启热部署
+#      additional-paths: src/main/java #java下任意文件改动都会重启
+#      trigger-file: #此项配置是指定一个文件，当需要重启时，修改该文件即可
+
+  cloud:
+    nacos:
+      config:
+        group: DEFAULT_GROUP
+        file-extension: yaml
+        server-addr: 192.168.56.101:8899
+        prefix: ${spring.application.name}
+        namespace: catdr
+      discovery:
+        server-addr: 192.168.56.101:8899
+        namespace: b7320349-560b-41da-8072-10b8c24e067b  # customer，乘客端
+        username: nacos
+        password: nacos
+        group: DEFAULT_GROUP
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://192.168.56.101:3306/cat?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
+      username: root
+      password: root
+      initial-size: 4
+      max-active: 8
+      min-idle: 8
+      max-wait: 60000
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+#      connection-properties: config.decrypt=true;config.decrypt.key=${public-key}
+      filter:
+        config:
+          enabled: true
+#public-key: 123456
+
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.cat.cust.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+#日志配置
+logging:
+  level:
+    root: info
+    com.cat.cust.dao: warn
+  pattern:
+    console: "%d{yyyy/MM/dd HH:mm:ss}  %-5level  %msg%n"
+
+#springDOC配置
+springdoc:
+  api-docs:
+    enabled: true
+    path: /doc-api.html
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: on
+
+#feign超时配置
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 300000
